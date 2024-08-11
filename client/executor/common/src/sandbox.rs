@@ -258,6 +258,17 @@ fn decode_environment_definition(
 			sandbox_env::ExternEntity::Function(func_idx) => {
 				let externals_idx =
 					guest_to_supervisor_mapping.define(SupervisorFuncIndex(func_idx as usize));
+
+				log::info!(
+					"ENV DEF func_map: externals_idx={:?}, func_idx={:?}, module_str={:?}, field_str={:?}",
+					// module,
+					// field,
+					externals_idx,
+					SupervisorFuncIndex(func_idx as usize),
+					String::from_utf8(module.clone()).unwrap_or(String::from("UNKNOWN !!!")),
+					String::from_utf8(field.clone()).unwrap_or(String::from("UNKNOWN !!!")),
+				);
+
 				func_map.insert((module, field), externals_idx);
 			},
 			sandbox_env::ExternEntity::Memory(memory_idx) => {
@@ -266,6 +277,16 @@ fn decode_environment_definition(
 					.cloned()
 					.ok_or(InstantiationError::EnvironmentDefinitionCorrupted)?
 					.ok_or(InstantiationError::EnvironmentDefinitionCorrupted)?;
+
+				log::info!(
+					"ENV DEF memories_map: memory_ref={:?}, module_str={:?}, field_str={:?}",
+					// module,
+					// field,
+					memory_ref,
+					String::from_utf8(module.clone()).unwrap_or(String::from("UNKNOWN !!!")),
+					String::from_utf8(field.clone()).unwrap_or(String::from("UNKNOWN !!!")),
+				);
+
 				memories_map.insert((module, field), memory_ref);
 			},
 		}
