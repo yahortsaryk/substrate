@@ -1622,9 +1622,16 @@ pub trait Sandbox {
 		env_def: &[u8],
 		state_ptr: Pointer<u8>,
 	) -> u32 {
-		self.sandbox()
+		log::info!(target: LOG_TARGET, "instantiate START: dispatch_thunk={:?}, env_def={:?}, state_ptr={:?}", dispatch_thunk, env_def, state_ptr);
+
+		let res = self
+			.sandbox()
 			.instance_new(dispatch_thunk, wasm_code, env_def, state_ptr.into())
-			.expect("Failed to instantiate a new sandbox")
+			.expect("Failed to instantiate a new sandbox");
+
+		log::info!(target: LOG_TARGET, "instantiate END: dispatch_thunk={:?}, env_def={:?}, state_ptr={:?}", dispatch_thunk, env_def, state_ptr);
+
+		res
 	}
 
 	/// Invoke `function` in the sandbox with `sandbox_idx`.
@@ -1637,16 +1644,30 @@ pub trait Sandbox {
 		return_val_len: u32,
 		state_ptr: Pointer<u8>,
 	) -> u32 {
-		self.sandbox()
+		log::info!(target: LOG_TARGET, "invoke START: instance_idx={:?}, function={:?}", instance_idx, function);
+
+		let res = self
+			.sandbox()
 			.invoke(instance_idx, function, args, return_val_ptr, return_val_len, state_ptr.into())
-			.expect("Failed to invoke function with sandbox")
+			.expect("Failed to invoke function with sandbox");
+
+		log::info!(target: LOG_TARGET, "invoke END: instance_idx={:?}, function={:?}", instance_idx, function);
+
+		res
 	}
 
 	/// Create a new memory instance with the given `initial` and `maximum` size.
 	fn memory_new(&mut self, initial: u32, maximum: u32) -> u32 {
-		self.sandbox()
+		log::info!(target: LOG_TARGET, "memory_new START: initial={:?}, maximum={:?}", initial, maximum);
+
+		let res = self
+			.sandbox()
 			.memory_new(initial, maximum)
-			.expect("Failed to create new memory with sandbox")
+			.expect("Failed to create new memory with sandbox");
+
+		log::info!(target: LOG_TARGET, "memory_new END: initial={:?}, maximum={:?}", initial, maximum);
+
+		res
 	}
 
 	/// Get the memory starting at `offset` from the instance with `memory_idx` into the buffer.
@@ -1657,9 +1678,11 @@ pub trait Sandbox {
 		buf_ptr: Pointer<u8>,
 		buf_len: u32,
 	) -> u32 {
-		self.sandbox()
+		let res = self
+			.sandbox()
 			.memory_get(memory_idx, offset, buf_ptr, buf_len)
-			.expect("Failed to get memory with sandbox")
+			.expect("Failed to get memory with sandbox");
+		res
 	}
 
 	/// Set the memory in the given `memory_idx` to the given value at `offset`.
@@ -1670,9 +1693,11 @@ pub trait Sandbox {
 		val_ptr: Pointer<u8>,
 		val_len: u32,
 	) -> u32 {
-		self.sandbox()
+		let res = self
+			.sandbox()
 			.memory_set(memory_idx, offset, val_ptr, val_len)
-			.expect("Failed to set memory with sandbox")
+			.expect("Failed to set memory with sandbox");
+		res
 	}
 
 	/// Teardown the memory instance with the given `memory_idx`.
@@ -1698,9 +1723,11 @@ pub trait Sandbox {
 		instance_idx: u32,
 		name: &str,
 	) -> Option<sp_wasm_interface::Value> {
-		self.sandbox()
+		let res = self
+			.sandbox()
 			.get_global_val(instance_idx, name)
-			.expect("Failed to get global from sandbox")
+			.expect("Failed to get global from sandbox");
+		res
 	}
 }
 

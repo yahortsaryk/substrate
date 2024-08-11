@@ -158,7 +158,7 @@ pub struct GuestExternals<'a> {
 /// Module instance in terms of selected backend
 enum BackendInstance {
 	/// Wasmi module instance
-	Wasmi(wasmi::ModuleRef),
+	Wasmi(pub wasmi::ModuleRef),
 
 	/// Wasmer module instance
 	#[cfg(feature = "wasmer-sandbox")]
@@ -330,7 +330,7 @@ pub enum SandboxBackend {
 #[derive(Clone, Debug)]
 pub enum Memory {
 	/// Wasmi memory reference
-	Wasmi(WasmiMemoryWrapper),
+	Wasmi(pub WasmiMemoryWrapper),
 
 	/// Wasmer memory refernce
 	#[cfg(feature = "wasmer-sandbox")]
@@ -419,10 +419,10 @@ pub struct Store<DT> {
 	/// Stores the instance and the dispatch thunk associated to per instance.
 	///
 	/// Instances are `Some` until torn down.
-	instances: Vec<Option<(Rc<SandboxInstance>, DT)>>,
+	pub instances: Vec<Option<(Rc<SandboxInstance>, DT)>>,
 	/// Memories are `Some` until torn down.
-	memories: Vec<Option<Memory>>,
-	backend_context: BackendContext,
+	pub memories: Vec<Option<Memory>>,
+	pub backend_context: BackendContext,
 }
 
 impl<DT: Clone> Store<DT> {

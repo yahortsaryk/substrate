@@ -18,6 +18,7 @@ codec = { package = "parity-scale-codec", version = "3.0.0" }
 log = "0.4.17"
 wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", branch = "v0.13.2" }
 sc-allocator = { version = "4.1.0-dev", path = "../../allocator" }
+sp-core = { version = "7.0.0", path = "../../../primitives/core" }
 sc-executor-common = { version = "0.10.0-dev", path = "../common" }
 sp-runtime-interface = { version = "7.0.0", path = "../../../primitives/runtime-interface" }
 sp-sandbox = { version = "0.10.0-dev", path = "../../../primitives/sandbox" }

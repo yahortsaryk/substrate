@@ -127,7 +127,7 @@ pub fn new_memory(initial: u32, maximum: Option<u32>) -> crate::error::Result<Me
 ///
 /// This wrapper limits the scope where the slice can be taken to
 #[derive(Debug, Clone)]
-pub struct MemoryWrapper(wasmi::MemoryRef);
+pub struct MemoryWrapper(pub wasmi::MemoryRef);
 
 impl MemoryWrapper {
 	/// Take ownership of the memory region and return a wrapper object
