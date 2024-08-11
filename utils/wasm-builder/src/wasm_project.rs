@@ -15,7 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{write_file_if_changed, CargoCommandVersioned};
+use crate::{write_file_if_changed, CargoCommandVersioned, OFFLINE};
 
 use build_helper::rerun_if_changed;
 use cargo_metadata::{CargoOpt, Metadata, MetadataCommand};
@@ -88,12 +88,12 @@ fn crate_metadata(cargo_manifest: &Path) -> Metadata {
 		cargo_manifest.to_path_buf()
 	};
 
-	let crate_metadata = MetadataCommand::new()
-		.manifest_path(cargo_manifest)
-		.features(CargoOpt::AllFeatures)
+	let mut crate_metadata_command = create_metadata_command(cargo_manifest);
+	crate_metadata_command.features(CargoOpt::AllFeatures);
+
+	let crate_metadata = crate_metadata_command
 		.exec()
 		.expect("`cargo metadata` can not fail on project `Cargo.toml`; qed");
-
 	// If the `Cargo.lock` didn't exist, we need to remove it after
 	// calling `cargo metadata`. This is required to ensure that we don't change
 	// the build directory outside of the `target` folder. Commands like
@@ -593,6 +593,11 @@ impl Profile {
 	}
 }
 
+/// Check environment whether we should build without network
+fn offline_build() -> bool {
+	env::var(OFFLINE).map_or(false, |v| v == "true")
+}
+
 /// Build the project to create the WASM binary.
 fn build_project(
 	project: &Path,
@@ -631,6 +636,10 @@ fn build_project(
 	build_cmd.arg("--profile");
 	build_cmd.arg(profile.name());
 
+	if offline_build() {
+		build_cmd.arg("--offline");
+	}
+
 	println!("{}", colorize_info_message("Information that should be included in a bug report."));
 	println!("{} {:?}", colorize_info_message("Executing build command:"), build_cmd);
 	println!("{} {}", colorize_info_message("Using rustc version:"), cargo_cmd.rustc_version());
@@ -647,50 +656,39 @@ fn compact_wasm_file(
 	project: &Path,
 	profile: Profile,
 	cargo_manifest: &Path,
-	wasm_binary_name: Option<String>,
+	out_name: Option<String>,
 ) -> (Option<WasmBinary>, Option<WasmBinary>, WasmBinaryBloaty) {
-	let default_wasm_binary_name = get_wasm_binary_name(cargo_manifest);
-	let wasm_file = project
+	let default_out_name = get_wasm_binary_name(cargo_manifest);
+	let out_name = out_name.unwrap_or_else(|| default_out_name.clone());
+	let in_path = project
 		.join("target/wasm32-unknown-unknown")
 		.join(profile.directory())
-		.join(format!("{}.wasm", default_wasm_binary_name));
+		.join(format!("{}.wasm", default_out_name));
 
-	let wasm_compact_file = if profile.wants_compact() {
-		let wasm_compact_file = project.join(format!(
-			"{}.compact.wasm",
-			wasm_binary_name.clone().unwrap_or_else(|| default_wasm_binary_name.clone()),
-		));
-		wasm_gc::garbage_collect_file(&wasm_file, &wasm_compact_file)
+	let (wasm_compact_path, wasm_compact_compressed_path) = if profile.wants_compact() {
+		let wasm_compact_path = project.join(format!("{}.compact.wasm", out_name,));
+		wasm_opt::OptimizationOptions::new_opt_level_0()
+			.mvp_features_only()
+			.debug_info(true)
+			.add_pass(wasm_opt::Pass::StripDwarf)
+			.run(&in_path, &wasm_compact_path)
 			.expect("Failed to compact generated WASM binary.");
-		Some(WasmBinary(wasm_compact_file))
-	} else {
-		None
-	};
 
-	let wasm_compact_compressed_file = wasm_compact_file.as_ref().and_then(|compact_binary| {
-		let file_name =
-			wasm_binary_name.clone().unwrap_or_else(|| default_wasm_binary_name.clone());
-
-		let wasm_compact_compressed_file =
-			project.join(format!("{}.compact.compressed.wasm", file_name));
-
-		if compress_wasm(&compact_binary.0, &wasm_compact_compressed_file) {
-			Some(WasmBinary(wasm_compact_compressed_file))
+		let wasm_compact_compressed_path =
+			project.join(format!("{}.compact.compressed.wasm", out_name));
+		if compress_wasm(&wasm_compact_path, &wasm_compact_compressed_path) {
+			(Some(WasmBinary(wasm_compact_path)), Some(WasmBinary(wasm_compact_compressed_path)))
 		} else {
-			None
+			(Some(WasmBinary(wasm_compact_path)), None)
 		}
-	});
-
-	let bloaty_file_name = if let Some(name) = wasm_binary_name {
-		format!("{}.wasm", name)
 	} else {
-		format!("{}.wasm", default_wasm_binary_name)
+		(None, None)
 	};
 
-	let bloaty_file = project.join(bloaty_file_name);
-	fs::copy(wasm_file, &bloaty_file).expect("Copying the bloaty file to the project dir.");
+	let bloaty_path = project.join(format!("{}.wasm", out_name));
+	fs::copy(in_path, &bloaty_path).expect("Copying the bloaty file to the project dir.");
 
-	(wasm_compact_file, wasm_compact_compressed_file, WasmBinaryBloaty(bloaty_file))
+	(wasm_compact_path, wasm_compact_compressed_path, WasmBinaryBloaty(bloaty_path))
 }
 
 fn compress_wasm(wasm_binary_path: &Path, compressed_binary_out_path: &Path) -> bool {
@@ -751,6 +749,16 @@ impl<'a> Deref for DeduplicatePackage<'a> {
 	}
 }
 
+fn create_metadata_command(path: impl Into<PathBuf>) -> MetadataCommand {
+	let mut metadata_command = MetadataCommand::new();
+	metadata_command.manifest_path(path);
+
+	if offline_build() {
+		metadata_command.other_options(vec!["--offline".to_owned()]);
+	}
+	metadata_command
+}
+
 /// Generate the `rerun-if-changed` instructions for cargo to make sure that the WASM binary is
 /// rebuilt when needed.
 fn generate_rerun_if_changed_instructions(
@@ -765,8 +773,7 @@ fn generate_rerun_if_changed_instructions(
 		rerun_if_changed(cargo_lock);
 	}
 
-	let metadata = MetadataCommand::new()
-		.manifest_path(project_folder.join("Cargo.toml"))
+	let metadata = create_metadata_command(project_folder.join("Cargo.toml"))
 		.exec()
 		.expect("`cargo metadata` can not fail!");
 
