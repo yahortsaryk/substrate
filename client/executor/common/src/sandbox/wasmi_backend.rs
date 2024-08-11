@@ -37,6 +37,8 @@ use crate::{
 	util::{checked_range, MemoryTransfer},
 };
 
+const LOG_TARGET: &str = "wasmi-backend-yahor-logger";
+
 environmental::environmental!(SandboxContextStore: trait SandboxContext);
 
 #[derive(Debug)]
