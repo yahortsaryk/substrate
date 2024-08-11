@@ -7928,7 +7928,7 @@ dependencies = [
  "tempfile",
  "tracing",
  "tracing-subscriber",
- "wasmi 0.13.0",
+ "wasmi 0.13.2",
  "wat",
 ]
 
@@ -7945,7 +7945,7 @@ dependencies = [
  "thiserror",
  "wasm-instrument 0.3.0",
  "wasmer",
- "wasmi 0.13.0",
+ "wasmi 0.13.2",
 ]
 
 [[package]]
@@ -7959,7 +7959,7 @@ dependencies = [
  "sp-runtime-interface",
  "sp-sandbox",
  "sp-wasm-interface",
- "wasmi 0.13.0",
+ "wasmi 0.13.2",
 ]
 
 [[package]]
@@ -9493,7 +9493,7 @@ dependencies = [
  "substrate-bip39",
  "thiserror",
  "tiny-bip39",
- "wasmi 0.13.0",
+ "wasmi 0.13.2",
  "zeroize",
 ]
 
@@ -9826,7 +9826,7 @@ dependencies = [
  "sp-io",
  "sp-std",
  "sp-wasm-interface",
- "wasmi 0.13.0",
+ "wasmi 0.13.2",
  "wat",
 ]
 
@@ -10026,7 +10026,7 @@ dependencies = [
  "log",
  "parity-scale-codec",
  "sp-std",
- "wasmi 0.13.0",
+ "wasmi 0.13.2",
  "wasmtime",
 ]
 
@@ -11556,13 +11556,13 @@ dependencies = [
 
 [[package]]
 name = "wasmi"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc13b3c219ca9aafeec59150d80d89851df02e0061bc357b4d66fc55a8d38787"
+version = "0.13.2"
+source = "git+https://github.com/yahortsaryk/wasmi.git?branch=v0.13.2#ecbcacca491b791268c46eaa2a31d770132ec742"
 dependencies = [
+ "log",
  "parity-wasm",
  "wasmi-validation",
- "wasmi_core 0.2.0",
+ "wasmi_core 0.2.1",
 ]
 
 [[package]]
@@ -11580,8 +11580,7 @@ dependencies = [
 [[package]]
 name = "wasmi-validation"
 version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91ff416ad1ff0c42e5a926ed5d5fab74c0f098749aa0ad8b2a34b982ce0e867b"
+source = "git+https://github.com/yahortsaryk/wasmi.git?branch=v0.13.2#ecbcacca491b791268c46eaa2a31d770132ec742"
 dependencies = [
  "parity-wasm",
 ]
@@ -11594,9 +11593,8 @@ checksum = "a1ea379cbb0b41f3a9f0bf7b47036d036aae7f43383d8cc487d4deccf40dee0a"
 
 [[package]]
 name = "wasmi_core"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0a088e8c4c59c6f2b9eae169bf86328adccc477c00b56d3661e3e9fb397b184"
+version = "0.2.1"
+source = "git+https://github.com/yahortsaryk/wasmi.git?branch=v0.13.2#ecbcacca491b791268c46eaa2a31d770132ec742"
 dependencies = [
  "downcast-rs",
  "libm",

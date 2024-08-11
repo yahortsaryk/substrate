@@ -19,7 +19,7 @@ environmental = "1.1.3"
 thiserror = "1.0.30"
 wasm-instrument = "0.3"
 wasmer = { version = "2.2", features = ["singlepass"], optional = true }
-wasmi = { git = "https://github.com/yahortsaryk/substrate.git", branch = "v0.13.2" }
+wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", branch = "v0.13.2" }
 sc-allocator = { version = "4.1.0-dev", path = "../../allocator" }
 sp-maybe-compressed-blob = { version = "4.1.0-dev", path = "../../../primitives/maybe-compressed-blob" }
 sp-sandbox = { version = "0.10.0-dev", path = "../../../primitives/sandbox" }
