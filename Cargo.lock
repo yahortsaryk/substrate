@@ -2129,7 +2129,7 @@ dependencies = [
  "hash-db",
  "hex",
  "itertools",
- "kvdb",
+ "kvdb 0.13.0",
  "lazy_static",
  "linked-hash-map",
  "log",
@@ -3343,12 +3343,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kvdb"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7d770dcb02bf6835887c3a979b5107a04ff4bbde97a5f0928d27404a155add9"
+dependencies = [
+ "smallvec",
+]
+
+[[package]]
 name = "kvdb-memorydb"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ece7e668abd21387aeb6628130a6f4c802787f014fa46bc83221448322250357"
 dependencies = [
- "kvdb",
+ "kvdb 0.11.0",
  "parity-util-mem",
  "parking_lot 0.12.0",
 ]
@@ -3360,7 +3369,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca7fbdfd71cd663dceb0faf3367a99f8cf724514933e9867cec4995b6027cbc1"
 dependencies = [
  "fs-swap",
- "kvdb",
+ "kvdb 0.11.0",
  "log",
  "num_cpus",
  "owning_ref",
@@ -4535,7 +4544,7 @@ dependencies = [
  "futures",
  "hash-db",
  "hex",
- "kvdb",
+ "kvdb 0.13.0",
  "kvdb-rocksdb",
  "lazy_static",
  "log",
@@ -8014,7 +8023,7 @@ name = "sc-client-db"
 version = "0.10.0-dev"
 dependencies = [
  "hash-db",
- "kvdb",
+ "kvdb 0.13.0",
  "kvdb-memorydb",
  "kvdb-rocksdb",
  "linked-hash-map",
@@ -9827,7 +9836,7 @@ dependencies = [
 name = "sp-database"
 version = "4.0.0-dev"
 dependencies = [
- "kvdb",
+ "kvdb 0.13.0",
  "parking_lot 0.12.0",
 ]
 
@@ -11242,7 +11251,7 @@ version = "1.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ee73e6e4924fe940354b8d4d98cad5231175d615cd855b758adc658c0aac6a0"
 dependencies = [
- "cfg-if 0.1.10",
+ "cfg-if 1.0.0",
  "digest 0.10.3",
  "rand 0.8.4",
  "static_assertions",
