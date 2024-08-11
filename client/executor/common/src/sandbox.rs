@@ -388,7 +388,7 @@ impl util::MemoryTransfer for Memory {
 }
 
 /// Information specific to a particular execution backend
-enum BackendContext {
+pub enum BackendContext {
 	/// Wasmi specific context
 	Wasmi,
 
