@@ -158,7 +158,7 @@ pub struct GuestExternals<'a> {
 /// Module instance in terms of selected backend
 enum BackendInstance {
 	/// Wasmi module instance
-	Wasmi(pub wasmi::ModuleRef),
+	Wasmi(wasmi::ModuleRef),
 
 	/// Wasmer module instance
 	#[cfg(feature = "wasmer-sandbox")]
@@ -330,7 +330,7 @@ pub enum SandboxBackend {
 #[derive(Clone, Debug)]
 pub enum Memory {
 	/// Wasmi memory reference
-	Wasmi(pub WasmiMemoryWrapper),
+	Wasmi(WasmiMemoryWrapper),
 
 	/// Wasmer memory refernce
 	#[cfg(feature = "wasmer-sandbox")]
