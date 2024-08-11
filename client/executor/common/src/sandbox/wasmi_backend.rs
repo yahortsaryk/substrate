@@ -176,6 +176,7 @@ impl<'a> wasmi::Externals for GuestExternals<'a> {
 		SandboxContextStore::with(|sandbox_context| {
 			// Make `index` typesafe again.
 			let index = GuestFuncIndex(index);
+			log::info!(target: LOG_TARGET, "GuestExternals.invoke_index START: index={:?}, args={:?}", index, args);
 
 			// Convert function index from guest to supervisor space
 			let func_idx = self.sandbox_instance
@@ -202,6 +203,8 @@ impl<'a> wasmi::Externals for GuestExternals<'a> {
 			// Move serialized arguments inside the memory, invoke dispatch thunk and
 			// then free allocated memory.
 			let invoke_args_len = invoke_args_data.len() as WordSize;
+
+			// HERE IS DEVIATION IN Pointer begins (2000296 vs 1327384)
 			let invoke_args_ptr = sandbox_context
 				.supervisor_context()
 				.allocate_memory(invoke_args_len)
@@ -224,19 +227,26 @@ impl<'a> wasmi::Externals for GuestExternals<'a> {
 				return Err(trap("Can't write invoke args into memory"))
 			}
 
+			log::info!(target: LOG_TARGET, "GuestExternals.invoke_index WIP0: invoke_args_ptr={:?}, invoke_args_len={:?}, state={:?}, index={:?}, func_idx={:?}", invoke_args_ptr, invoke_args_len, state, index, func_idx);
 			let result = sandbox_context.invoke(
 				invoke_args_ptr,
 				invoke_args_len,
 				state,
 				func_idx,
 			);
+			log::info!(target: LOG_TARGET, "GuestExternals.invoke_index WIP1: invoke_args_ptr={:?}, invoke_args_len={:?}, state={:?}, index={:?}, func_idx={:?}", invoke_args_ptr, invoke_args_len, state, index, func_idx);
 
 			deallocate(
 				sandbox_context.supervisor_context(),
 				invoke_args_ptr,
 				"Can't deallocate memory for dispatch thunk's invoke arguments",
 			)?;
+			log::info!(target: LOG_TARGET, "GuestExternals.invoke_index WIP2: invoke_args_ptr={:?}, invoke_args_len={:?}, state={:?}, func_idx={:?}", invoke_args_ptr, invoke_args_len, state, func_idx);
+
 			let result = result?;
+
+			log::info!(target: LOG_TARGET, "GuestExternals.invoke_index WIP3: result={:?}", result);
+
 
 			// dispatch_thunk returns pointer to serialized arguments.
 			// Unpack pointer and len of the serialized result data.
@@ -247,11 +257,13 @@ impl<'a> wasmi::Externals for GuestExternals<'a> {
 				let len = (v & 0xFFFFFFFF) as u32;
 				(Pointer::new(ptr), len)
 			};
+			log::info!(target: LOG_TARGET, "GuestExternals.invoke_index => serialized_result_val_ptr={:?}, serialized_result_val_len={:?}", serialized_result_val_ptr, serialized_result_val_len);
 
 			let serialized_result_val = sandbox_context
 				.supervisor_context()
 				.read_memory(serialized_result_val_ptr, serialized_result_val_len)
 				.map_err(|_| trap("Can't read the serialized result from dispatch thunk"));
+			log::info!(target: LOG_TARGET, "GuestExternals.invoke_index => serialized_result_val={:?}", serialized_result_val);
 
 			deallocate(
 				sandbox_context.supervisor_context(),
@@ -260,8 +272,10 @@ impl<'a> wasmi::Externals for GuestExternals<'a> {
 			)
 			.and(serialized_result_val)
 			.and_then(|serialized_result_val| {
+				log::info!(target: LOG_TARGET, "Before HostError 1 result_val={:?}", serialized_result_val);
 				let result_val = std::result::Result::<ReturnValue, HostError>::decode(&mut serialized_result_val.as_slice())
 					.map_err(|_| trap("Decoding Result<ReturnValue, HostError> failed!"))?;
+				log::info!(target: LOG_TARGET, "Before HostError 2 result_val={:?}", result_val);
 
 				match result_val {
 					Ok(return_value) => Ok(match return_value {
@@ -321,17 +335,28 @@ pub fn invoke(
 	state: u32,
 	sandbox_context: &mut dyn SandboxContext,
 ) -> std::result::Result<Option<Value>, error::Error> {
+	log::info!(target: LOG_TARGET, "wasmi_invoke WIP 1");
+
 	with_guest_externals(instance, state, |guest_externals| {
+		log::info!(target: LOG_TARGET, "wasmi_invoke in-closure WIP 1");
+
 		SandboxContextStore::using(sandbox_context, || {
 			let args = args.iter().cloned().map(Into::into).collect::<Vec<_>>();
 
-			module
+			log::info!(target: LOG_TARGET, "wasmi_invoke in-closure WIP 2");
+
+			let res = module
 				.invoke_export(export_name, &args, guest_externals)
 				.map(|result| result.map(Into::into))
-				.map_err(|error| error::Error::Sandbox(error.to_string()))
+				.map_err(|error| error::Error::Sandbox(error.to_string()));
+
+			log::info!(target: LOG_TARGET, "wasmi_invoke in-closure WIP 3 res={:?}", res);
+
+			res
 		})
 	})
 }
+
 
 /// Get global value by name
 pub fn get_global(instance: &wasmi::ModuleRef, name: &str) -> Option<Value> {
