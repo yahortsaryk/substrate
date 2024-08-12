@@ -18,7 +18,7 @@ lazy_static = "1.4.0"
 lru = "0.8.1"
 parking_lot = "0.12.1"
 tracing = "0.1.29"
-wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "46fdd83a4f5762ac8a1fe5ab080647b9cfefbacf" }
+wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "4438f82b6c013982dc4f251f1c5eae0c7af4c09e" }
 
 codec = { package = "parity-scale-codec", version = "3.0.0" }
 sc-executor-common = { version = "0.10.0-dev", path = "common" }
