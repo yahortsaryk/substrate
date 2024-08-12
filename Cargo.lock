@@ -11578,7 +11578,7 @@ dependencies = [
 [[package]]
 name = "wasmi"
 version = "0.13.2"
-source = "git+https://github.com/yahortsaryk/wasmi.git?rev=f5b4081143d5c95f2ea51a98f8b4402e9b2421b5"
+source = "git+https://github.com/yahortsaryk/wasmi.git?rev=6a6132719354da4625fbeccde02470fc196381a6"
 dependencies = [
  "log",
  "parity-wasm",
@@ -11602,7 +11602,7 @@ dependencies = [
 [[package]]
 name = "wasmi-validation"
 version = "0.5.0"
-source = "git+https://github.com/yahortsaryk/wasmi.git?rev=f5b4081143d5c95f2ea51a98f8b4402e9b2421b5"
+source = "git+https://github.com/yahortsaryk/wasmi.git?rev=6a6132719354da4625fbeccde02470fc196381a6"
 dependencies = [
  "parity-wasm",
 ]
@@ -11616,7 +11616,7 @@ checksum = "a1ea379cbb0b41f3a9f0bf7b47036d036aae7f43383d8cc487d4deccf40dee0a"
 [[package]]
 name = "wasmi_core"
 version = "0.2.1"
-source = "git+https://github.com/yahortsaryk/wasmi.git?rev=f5b4081143d5c95f2ea51a98f8b4402e9b2421b5"
+source = "git+https://github.com/yahortsaryk/wasmi.git?rev=6a6132719354da4625fbeccde02470fc196381a6"
 dependencies = [
  "downcast-rs",
  "libm",
