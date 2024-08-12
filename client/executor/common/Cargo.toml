@@ -20,7 +20,7 @@ environmental = "1.1.3"
 thiserror = "1.0.30"
 wasm-instrument = "0.3"
 wasmer = { version = "2.2", features = ["singlepass"], optional = true }
-wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "b44ef4bea2384ef47fc5db1e877b8797562a419d" }
+wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "f5b4081143d5c95f2ea51a98f8b4402e9b2421b5" }
 sc-allocator = { version = "4.1.0-dev", path = "../../allocator" }
 sp-maybe-compressed-blob = { version = "4.1.0-dev", path = "../../../primitives/maybe-compressed-blob" }
 sp-sandbox = { version = "0.10.0-dev", path = "../../../primitives/sandbox" }
