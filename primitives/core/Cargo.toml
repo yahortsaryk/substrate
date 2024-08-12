@@ -23,7 +23,7 @@ serde = { version = "1.0.136", optional = true, features = ["derive"] }
 byteorder = { version = "1.3.2", default-features = false }
 primitive-types = { version = "0.12.0", default-features = false, features = ["codec", "scale-info"] }
 impl-serde = { version = "0.4.0", optional = true }
-wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "6a6132719354da4625fbeccde02470fc196381a6", optional = true }
+wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "161876b200c3e680eb7353f5fd6481633dd52379", optional = true }
 hash-db = { version = "0.15.2", default-features = false }
 hash256-std-hasher = { version = "0.15.2", default-features = false }
 base58 = { version = "0.2.0", optional = true }

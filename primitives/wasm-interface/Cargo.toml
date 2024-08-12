@@ -17,7 +17,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
 impl-trait-for-tuples = "0.2.2"
 log = { version = "0.4.17", optional = true }
-wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "6a6132719354da4625fbeccde02470fc196381a6", optional = true }
+wasmi = { git = "https://github.com/yahortsaryk/wasmi.git", rev = "161876b200c3e680eb7353f5fd6481633dd52379", optional = true }
 wasmtime = { version = "1.0.0", default-features = false, optional = true }
 sp-std = { version = "5.0.0", default-features = false, path = "../std" }
 
